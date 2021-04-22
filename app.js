@@ -3,12 +3,16 @@ canvas.width = window.innerWidth - 60;
 canvas.height = 400;
 
 let context = canvas.getContext('2d');
-context.fillStyle = "white";
+let startBackgroundColor = "white";
+context.fillStyle = startBackgroundColor;
 context.fillRect(0,0, canvas.width, canvas.height);
 
 let drawColor = 'black';
 let drawWidth = '2';
 let isDrawing = false;
+
+let index = -1;
+let movesArray = [];
 
 function changeColor(element){
     drawColor = element.style.backgroundColor;
@@ -48,8 +52,28 @@ function stop(event){
         isDrawing = false;
     }
     event.preventDefault();
+
+    if(event.type != 'mouseout'){
+        movesArray.push(context.getImageData(0, 0, canvas.width, canvas.height));
+        index += 1;
+    }
 }
 
 function clearCanvas(){
-    
+    context.fillStyle = startBackgroundColor;
+    context.clearRect(0, 0, canvas.width, canvas.height)
+    context.fillRect(0, 0, canvas.width, canvas.height)
+
+    movesArray = [];
+    index = -1;
+}
+
+function undoLast(){
+    if(index <= 0){
+        clearCanvas();
+    } else {
+        index -= 1;
+        movesArray.pop();
+        context.putImageData(movesArray[index], 0, 0);
+    }
 }
